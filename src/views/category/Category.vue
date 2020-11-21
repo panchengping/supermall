@@ -112,6 +112,6 @@
 <style scoped>
   .content {
     height: 150px;
-    background-color: red;
+    background-color: #ff0000;
   }
 </style>
