@@ -18,8 +18,13 @@
     },
     mounted() {
       this.scroll = new BScroll(this.$refs.wrapper, {
-        click: true
+
       })
+    },
+    methods: {
+      scrollTo(x, y, time=300) {
+        this.scroll.scrollTo(x,y,time)
+      }
     }
   }
 </script>

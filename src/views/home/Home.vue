@@ -2,7 +2,7 @@
   <div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div> </nav-bar>
 
-    <scroll class="content">
+    <scroll class="content" ref="scroll">
       <home-swiper :banners="banners"/>
       <recommend-view :recommends="recommends"/>
       <feature-view/>
@@ -10,7 +10,7 @@
       <goods-list :goods="showGoods"/>
     </scroll>
 
-    <back-top @click.native=""/>
+    <back-top @click.native="backClick"/>
   </div>
 </template>
 
@@ -67,6 +67,8 @@
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
     },
+
+
     methods: {
       //时间监听相关方法
       tabClick(index) {
@@ -81,6 +83,9 @@
             this.currentType = 'sell'
             break;
         }
+      },
+      backClick() {
+        this.$refs.scroll.scrollTo(0,0)
       },
 
 
@@ -136,6 +141,7 @@
     bottom: 49px;
     left: 0;
     right: 0 ;
+
   }
 
 </style>
