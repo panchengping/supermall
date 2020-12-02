@@ -1,7 +1,7 @@
 <template>
   <div id="detail">
-    <detail-nav-bar class="detail-nav" @titleClick="titleClick"/>
-    <scroll class="content" ref="scroll" >
+    <detail-nav-bar class="detail-nav" @titleClick="titleClick" ref="nav"/>
+    <scroll class="content" ref="scroll" :probe-type = '3' @scroll="contentScroll">
       <detail-swiper :top-images="topImages"/>
       <detail-base-info :goods="goods"/>
       <detail-shop-info :shop="shop"/>
@@ -10,6 +10,8 @@
       <detail-comment-info :comment-info="commentInfo" ref="comment"/>
       <goods-list :goods="recommends" ref="recommend" ></goods-list>
     </scroll>
+    <detail-bottom-bar/>
+    <back-top @click.native="backClick" v-show="isShowBackTop"/>
   </div>
 </template>
 
@@ -21,6 +23,7 @@
   import DetailGoodsInfo from "./childComps/DetailGoodsInfo";
   import DetailParamInfo from "./childComps/DetailParamInfo";
   import DetailCommentInfo from "./childComps/DetailCommentInfo";
+  import DetailBottomBar from "./childComps/DetailBottomBar";
 
 
   import GoodsList from "components/content/goods/GoodsList";
@@ -30,11 +33,13 @@
   import {debounce} from "common/utils";
 
   import {getDetail, Goods, Shop, GoodsParam, getRecommend} from "network/detail";
-  import {itemListenerMixin} from "common/mixin";
+  import {itemListenerMixin, backTopMixin} from "common/mixin";
+  import BackTop from "@/components/content/backTop/BackTop";
 
   export default {
     name: "Detail",
     components: {
+      BackTop,
       DetailNavBar,
       DetailSwiper,
       DetailBaseInfo,
@@ -43,9 +48,10 @@
       DetailGoodsInfo,
       DetailParamInfo,
       DetailCommentInfo,
-      GoodsList
+      GoodsList,
+      DetailBottomBar
     },
-    mixins: [itemListenerMixin],
+    mixins: [itemListenerMixin, backTopMixin],
     data() {
       return {
         iid: null,
@@ -57,7 +63,8 @@
         commentInfo: {},
         recommends: [],
         themeTopYs: [],
-        getThemeTopY: null
+        getThemeTopY: null,
+        currentIndex: 0
       }
     },
     created() {
@@ -90,6 +97,7 @@
         this.themeTopYs.push(this.$refs.params.$el.offsetTop)
         this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
         this.themeTopYs.push(this.$refs.recommend.$el.offsetTop)
+        this.themeTopYs.push(Number.MAX_VALUE)
 
       },100)
     },
@@ -102,6 +110,19 @@
       imageLoad() {
         this.$refs.scroll.refresh()
         this.getThemeTopY()
+      },
+
+      contentScroll(position) {
+        const positionY = -position.y
+        const length = this.themeTopYs.length
+        for(let i = 0; i < length-1; i++) {
+          if(this.currentIndex !== i && ((i<length-1 && positionY>= this.themeTopYs[i] &&positionY <= this.themeTopYs[i+1]))){
+            this.currentIndex = i;
+            this.$refs.nav.currentIndex = this.currentIndex
+          }
+        }
+
+        this.listenShoBackTop(position)
       }
     },
     destroyed() {
@@ -125,6 +146,6 @@
   }
 
   .content {
-    height: calc(100% - 44px);
+    height: calc(100% - 44px - 49px);
   }
 </style>
