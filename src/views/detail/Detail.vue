@@ -139,7 +139,7 @@
         product.price = this.goods.realPrice
         product.iid = this.iid
 
-        this.$store.commit('addCart', product)
+        this.$store.dispatch('addCart',product)
       },
 
     },
