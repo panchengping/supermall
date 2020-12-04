@@ -139,7 +139,13 @@
         product.price = this.goods.realPrice
         product.iid = this.iid
 
-        this.$store.dispatch('addCart',product)
+        if(product.iid){
+          this.$store.dispatch('addCart',product).then(res => {
+            this.$toast.show(res, 1500)
+            // console.log(res);
+          })}else {
+          this.$toast.show('添加失败请刷新重试', 1500)
+        }
       },
 
     },
